@@ -1,0 +1,25 @@
+#include<mpi.h>
+#include<stdio.h>
+int main(int argc, char *argv[]) {
+	int rank, size ;
+	int a, b, res_add, res_sub, res_mul;
+	float res_div ;
+	printf(" Enter a - " ) ;
+	scanf("%d",&a) ;
+	printf(" Enter b - ") ;
+	scanf("%d",&b) ;
+	MPI_Init(&argc,&argv);
+	MPI_Comm_rank(MPI_COMM_WORLD,&rank) ;
+	MPI_Comm_size(MPI_COMM_WORLD,&size) ;
+	if (rank == 0)
+		res_add = a + b ;
+	else if (rank == 1)
+		res_sub = a - b ;
+	else if (rank == 2)
+		res_mul = a*b ;
+	else
+		res_div = (float)a/(float)b ;
+	MPI_Finalize();
+	printf(" Add - %d , sub - %d, Mul - %d, Div - %d ") ;
+	return 0 ;
+}

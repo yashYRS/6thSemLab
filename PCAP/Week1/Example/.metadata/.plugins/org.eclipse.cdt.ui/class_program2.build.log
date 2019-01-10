@@ -1,0 +1,18 @@
+14:57:54 **** Build of configuration Debug for project class_program2 ****
+make all 
+Building file: ../parent_child.c
+Invoking: GCC C Compiler
+gcc -I/usr/include/mpich -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"parent_child.d" -MT"parent_child.d" -o "parent_child.o" "../parent_child.c"
+Finished building: ../parent_child.c
+ 
+Building target: class_program2
+Invoking: GCC C Linker
+gcc -L/usr/lib/mpich/lib -o "class_program2"  ./parent_child.o   -lmpi
+/usr/lib/gcc/x86_64-linux-gnu/5/../../../x86_64-linux-gnu/crt1.o: In function `_start':
+(.text+0x20): undefined reference to `main'
+makefile:29: recipe for target 'class_program2' failed
+collect2: error: ld returned 1 exit status
+make: *** [class_program2] Error 1
+
+14:57:55 Build Finished (took 242ms)
+

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;class_program2/Parent_child.c&apos; to &apos;parent_child.c&apos;" description="Rename resource &apos;Parent_child.c&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="Parent_child.c" name="parent_child.c" stamp="1546507612203" updateReferences="true"/>
+</session>

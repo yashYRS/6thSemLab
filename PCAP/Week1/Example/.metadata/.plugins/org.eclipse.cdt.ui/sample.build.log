@@ -1,0 +1,15 @@
+14:54:40 **** Incremental Build of configuration Debug for project sample ****
+make all 
+Building file: ../classprogram1.c
+Invoking: GCC C Compiler
+gcc -I/usr/include/mpich -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"classprogram1.d" -MT"classprogram1.d" -o "classprogram1.o" "../classprogram1.c"
+Finished building: ../classprogram1.c
+ 
+Building target: sample
+Invoking: GCC C Linker
+gcc -L/usr/lib/mpich/lib -o "sample"  ./classprogram1.o   -lmpi
+Finished building target: sample
+ 
+
+14:54:40 Build Finished (took 218ms)
+

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;matrix_multiply/src/matrix_multiply.cpp.cpp&apos; to &apos;matrix_multiply.cpp&apos;" description="Rename resource &apos;matrix_multiply.cpp.cpp&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/matrix_multiply.cpp.cpp" name="matrix_multiply.cpp" stamp="1546512502663" updateReferences="true"/>
+</session>

@@ -1,0 +1,15 @@
+16:44:14 **** Incremental Build of configuration Debug for project Prime ****
+make all 
+Building file: ../prime.c
+Invoking: GCC C Compiler
+gcc -I/usr/include/mpich -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"prime.d" -MT"prime.d" -o "prime.o" "../prime.c"
+Finished building: ../prime.c
+ 
+Building target: Prime
+Invoking: GCC C Linker
+gcc -L/usr/lib/mpich/lib -o "Prime"  ./prime.o   -lmpi
+Finished building target: Prime
+ 
+
+16:44:14 Build Finished (took 217ms)
+

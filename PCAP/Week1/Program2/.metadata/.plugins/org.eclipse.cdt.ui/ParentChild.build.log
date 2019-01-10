@@ -1,0 +1,15 @@
+15:06:09 **** Incremental Build of configuration Debug for project ParentChild ****
+make all 
+Building file: ../parentchild.c
+Invoking: GCC C Compiler
+gcc -I/usr/include/mpich -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"parentchild.d" -MT"parentchild.d" -o "parentchild.o" "../parentchild.c"
+Finished building: ../parentchild.c
+ 
+Building target: ParentChild
+Invoking: GCC C Linker
+gcc -L/usr/lib/mpich/lib -o "ParentChild"  ./parentchild.o   -lmpi
+Finished building target: ParentChild
+ 
+
+15:06:09 Build Finished (took 167ms)
+
