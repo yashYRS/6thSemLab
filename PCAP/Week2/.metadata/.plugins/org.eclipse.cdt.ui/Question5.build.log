@@ -1,0 +1,15 @@
+16:52:47 **** Incremental Build of configuration Debug for project Question5 ****
+make all 
+Building file: ../incrementNumber.c
+Invoking: GCC C Compiler
+gcc -I/usr/include/mpich -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"incrementNumber.d" -MT"incrementNumber.d" -o "incrementNumber.o" "../incrementNumber.c"
+Finished building: ../incrementNumber.c
+ 
+Building target: Question5
+Invoking: GCC C Linker
+gcc -L/usr/lib/mpich/lib -o "Question5"  ./incrementNumber.o   -lmpi
+Finished building target: Question5
+ 
+
+16:52:47 Build Finished (took 212ms)
+

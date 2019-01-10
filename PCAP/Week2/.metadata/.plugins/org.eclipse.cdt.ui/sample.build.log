@@ -1,0 +1,12 @@
+14:30:29 **** Incremental Build of configuration Debug for project sample ****
+make all 
+Building file: ../sample.c
+Invoking: GCC C Compiler
+gcc -I/usr/lib/mpich -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"sample.d" -MT"sample.d" -o "sample.o" "../sample.c"
+../sample.c:1:16: fatal error: mpi.h: No such file or directory
+subdir.mk:18: recipe for target 'sample.o' failed
+compilation terminated.
+make: *** [sample.o] Error 1
+
+14:30:29 Build Finished (took 165ms)
+
