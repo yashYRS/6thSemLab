@@ -7,8 +7,8 @@
 struct Token {
 	int trow ; 
 	int tcol ; 
-	char *lex ; 
-	char *type ; 
+	char lex[20] ; 
+	char type[20] ; 
 } ; 
 
 typedef struct Token *tokenptr ; 
@@ -33,6 +33,7 @@ void printToken(int r , int c , char *lex, char *type) {
 
 int getNextToken(FILE *input) {
 	char temp[20] ;  
+	tokenptr newtoken = (tokenptr) malloc(sizeof(struct Token)) ; 
 	while (curr != EOF ) { 
 		if (curr == '/') {  
 			curr2 = getc(input) ; 
@@ -60,6 +61,10 @@ int getNextToken(FILE *input) {
 				temp[0] = curr ; 
 				temp[1] = '\0' ; 				
 				printToken(row, col, temp, "Arithmetic") ; 
+				newtoken->trow = row ; 
+				newtoken->tcol = col ; 
+				strcpy(newtoken->lex,temp) ; 
+				strcpy(newtoken->type, "Arithmetic") ; 
 				curr = getc(input) ; 
 				rowCol(curr) ; 
 				return 1 ;
@@ -80,6 +85,10 @@ int getNextToken(FILE *input) {
 			temp[ind] = '\0' ;  
 			if ( strcmp(temp,"include") == 0  || strcmp(temp, "define") == 0 ) {
 				printToken(initrow, initcol ,temp , "Preprocessor") ; 
+				newtoken->trow = row ; 
+				newtoken->tcol = col ; 
+				strcpy(newtoken->lex,temp) ; 
+				strcpy(newtoken->type, "Preprocessor") ; 				
 				while(curr2!= '\n') {
 					curr2 = getc(input) ; 			
 					rowCol(curr2) ; 
@@ -96,6 +105,10 @@ int getNextToken(FILE *input) {
 				temp[0] = curr ; 
 				temp[1] = '\0' ; 
 				printToken(row, col, temp, "Arithmetic") ;
+				newtoken->trow = row ; 
+				newtoken->tcol = col ; 
+				strcpy(newtoken->lex,temp) ; 
+				strcpy(newtoken->type, "Arithmetic") ; 				
 			}
 			curr = curr2 ; 
 			rowCol(curr) ; 
@@ -107,6 +120,10 @@ int getNextToken(FILE *input) {
 			temp[0] = curr ; 
 			temp[1] = '\0' ; 
 			printToken(row, col, temp, "String") ;	
+			newtoken->trow = row ; 
+			newtoken->tcol = col ; 
+			strcpy(newtoken->lex,temp) ; 
+			strcpy(newtoken->type, "String") ; 			
 			do {	
 				curr2 = getc(input) ; 
 				rowCol(curr2) ; 
@@ -118,12 +135,21 @@ int getNextToken(FILE *input) {
 			temp[0] = curr ;
 			temp[1] = curr2 ; 
 			temp[2] = '\0' ; 
- 			if (curr2 == '=')
+			newtoken->trow = row ; 
+			newtoken->tcol = col ; 
+			strcpy(newtoken->lex,temp) ; 
+ 			if (curr2 == '=') {
 				printToken(row,col, temp , "Relational") ; 
-			else if (curr == '=') 
+				strcpy(newtoken->type, "Relational") ; 			
+			}
+			else if (curr == '=') {
 				printToken(row, col, temp, "Assignment") ; 
-			else 
+				strcpy(newtoken->type, "Assignment") ; 			
+			}
+			else { 
 				printToken(row,col, temp , "Relational") ; 
+				strcpy(newtoken->type, "Relational") ; 			
+			}
 			rowCol(curr2) ; 
 			curr = curr2 ; 
 			return 1; 
@@ -136,6 +162,10 @@ int getNextToken(FILE *input) {
 			if (curr2 != curr)  {
 				temp[1] = '\0' ; 				
 				printToken(row, col , temp, "Logical") ; 
+				newtoken->trow = row ; 
+				newtoken->tcol = col ; 
+				strcpy(newtoken->lex,temp) ; 
+				strcpy(newtoken->type, "Logical") ; 					
 				curr = curr2 ; 
 				rowCol(curr) ; 
 				return 1 ; 
@@ -143,6 +173,10 @@ int getNextToken(FILE *input) {
 			else {
 				temp[2] = '\0' ; 
 				printToken(row, col, temp, "Logical") ; 
+				newtoken->trow = row ; 
+				newtoken->tcol = col ; 
+				strcpy(newtoken->lex,temp) ; 
+				strcpy(newtoken->type, "Logical") ; 	
 				return 1; 
 			}
 		} 	
@@ -158,6 +192,10 @@ int getNextToken(FILE *input) {
 			}while(isdigit(curr2)) ; 
 			temp[ind] = '\0' ; 
  			printToken(row, col-ind ,temp, "Numerical") ; 
+			newtoken->trow = row ; 
+			newtoken->tcol = col ; 
+			strcpy(newtoken->lex,temp) ; 
+			strcpy(newtoken->type, "Numerical") ; 	 			
 			curr = curr2 ; 
 			return 1;  
 		}
@@ -167,6 +205,10 @@ int getNextToken(FILE *input) {
 			temp[0] = curr ; 
 			temp[1] = '\0' ; 
 			printToken(row, col , temp, "Special") ; 
+			newtoken->trow = row ; 
+			newtoken->tcol = col ; 
+			strcpy(newtoken->lex,temp) ; 
+			strcpy(newtoken->type, "Special") ; 				
 		} 	// Special 
 
 		curr2 = curr ; 
@@ -182,11 +224,20 @@ int getNextToken(FILE *input) {
 			for (int i = 0 ; i < 12 ; i++) {
 				if (strcmp(keywords[i], temp) == 0 ) {
 					printToken(initrow, initcol, temp , "Keyword") ; 
+					newtoken->trow = row ; 
+					newtoken->tcol = col ; 
+					strcpy(newtoken->lex,temp) ; 
+					strcpy(newtoken->type, "Keyword") ; 						
 					flag = 1 ; 
 				}
 			}
-			if (flag != 1) 
+			if (flag != 1)  {
 				printToken(initrow, initcol , temp , "identifier") ; 
+				newtoken->trow = row ; 
+				newtoken->tcol = col ; 
+				strcpy(newtoken->lex,temp) ; 
+				strcpy(newtoken->type, "String") ; 	
+			}
 		}
 		else {
 			 curr = getc(input) ; 
