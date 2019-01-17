@@ -25,14 +25,11 @@ int main(int argc , char *argv[]) {
 		newTemp[i*2] = temp[0][i] ;
 		newTemp[i*2 + 1] = temp[1][i] ;
 	}
-/*	temp[0][len/size] = '\0' ;
-	temp[1][len/size] = '\0' ;
-	strcpy(newTemp, temp[0]) ;
-	strcat(newTemp,temp[1]) ;*/
-
+	newTemp[2*len/size] = '\0' ;
 	MPI_Gather(&newTemp, strlen(newTemp), MPI_CHAR, final, strlen(newTemp), MPI_CHAR, 0 , MPI_COMM_WORLD) ;
 	if (rank == 0 ) {
-		fprintf(stdout, " %s  ", final) ;
+		final[2*len] = '\0' ;
+		fprintf(stdout, "%s", final) ;
 		fflush(stdout) ;
 	}
 	fflush(stdout);
