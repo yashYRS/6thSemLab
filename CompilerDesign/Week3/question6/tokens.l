@@ -3,7 +3,7 @@
 	#include<stdlib.h>
 	#include<string.h>
 	#define YY_DECL struct token *yylex(void) 
-	enum tokenType { EOFILE = -1, RELATIONAL , ARITHMETIC , SPECIAL , IDENTIFIER, KEYWORD } ; 
+	enum tokenType { EOFILE = -1, RELATIONAL , ARITHMETIC , SPECIAL , IDENTIFIER, KEYWORD , NUMERICAL, LITERAL , LOGICAL, SHORTHAND, UNARY } ; 
 	
 	struct token {
 		char *lexeme ; 
@@ -35,7 +35,7 @@
 %}
 %%
 
-"/*".*"*/" {
+"/*"(.(\n?))*"*/" {
 	int i = 0 ; 
 	while ( yytext[i] != '\0') {
 		if (yytext[i] == '\n') {
@@ -51,63 +51,153 @@
 "#".*"\n" {lineno++ ; colno = 1; }
 "//".*"\n" {lineno++ ; colno=1 ; }
 
-(\"(.)*\") {colno+=strlen(yytext);}
+(\"(.)*\") {
+	tk=allocToken();
+	setTokenArgs(tk,"",-1, lineno, colno, LITERAL);
+	colno = colno + strlen(yytext) ;  	
+	return tk ; 
+}
 
-(\'(.)\') {colno+=strlen(yytext);}
+(\'(.)\') {
+	tk=allocToken();
+	setTokenArgs(tk,"",-1, lineno, colno, LITERAL);
+	colno = colno + strlen(yytext) ;  	
+	return tk; 
+}
 
 \n {lineno++ ; colno = 1;}
+\t {colno++;}
 
 ("="|">"|"<")"="? {
 	tk=allocToken();
 	setTokenArgs(tk,yytext,-1, lineno, colno, RELATIONAL);
-	colno++ ; 
+	colno = colno + strlen(yytext) ;  
 	return tk ; 
 	}
 
 "!=" {
 	tk=allocToken();
 	setTokenArgs(tk,yytext,-1, lineno, colno, RELATIONAL);
-	colno++ ; 
+	colno = colno + strlen(yytext)  ; 
 	return tk ; 
 }
 
 ("+"|"-"|"*"|"/")^("+"|"-"|"*"|"/") {
 	tk=allocToken();
 	setTokenArgs(tk,yytext,-1, lineno, colno, ARITHMETIC);
-	colno++ ; 
+	colno = colno + strlen(yytext)  ; 
 	return tk ; 	
 }
 
-("{"|"}"|";"|"("|")"|"["|"]") {
+("&"&?|"|"\|?) {
+	tk = allocToken() ; 
+	setTokenArgs(tk, yytext , -1 ,lineno, colno , LOGICAL) ; 
+	colno = colno + strlen(yytext)  ; 
+	return tk ; 
+}
+
+("++"|"--"|"&"|"~") {
+	tk=allocToken();
+	setTokenArgs(tk,yytext,-1, lineno, colno, UNARY);
+	colno = colno + strlen(yytext)  ; 
+	return tk ;	
+}
+
+("+="|"-="|"*="|"\=") {
+	tk=allocToken();
+	setTokenArgs(tk,yytext,-1, lineno, colno, SHORTHAND);
+	colno = colno + strlen(yytext)  ; 
+	return tk ;
+}
+
+(-0*[1-9][0-9]*)|(\+?0*[1-9][0-9]*)|(-0*[1-9][0-9]*\.[0-9]+)|(\+?0*[1-9][0-9]*\.[0-9]+) {
+	tk = allocToken() ; 
+	setTokenArgs(tk, yytext , -1, lineno , colno , NUMERICAL) ; 
+	colno = colno + strlen(yytext) ; 
+	return tk ; 
+}
+
+
+
+(","|"{"|"}"|";"|"("|")"|"["|"]") {
 	tk=allocToken();
 	setTokenArgs(tk,yytext,-1, lineno, colno, SPECIAL);
-	colno++ ; 
+	colno = colno + strlen(yytext)  ; 
 	return tk ; 	
 }
 
-[^a-zA-Z0-9_]"printf"|"scanf"|"int"|"char"|"return"|"for"|"if"|"else"[^a-zA-Z0-9_] {
+[^a-zA-Z0-9_]"int"|"char"|"return"|"for"|"if"|"else"[^a-zA-Z0-9_] {
 	tk=allocToken();
 	setTokenArgs(tk,yytext,-1, lineno, colno, KEYWORD);
-	colno++ ; 
+	colno = colno + strlen(yytext)  ; 
 	return tk ;
 }
 
 [a-zA-Z_][a-zA-Z_0-9]* {
 	tk=allocToken();
 	setTokenArgs(tk,yytext,-1, lineno, colno, IDENTIFIER);
-	colno++ ; 
+	colno = colno + strlen(yytext)  ; 
 	return tk ;
 }
 
 %%
+
+void retString(enum tokenType type, char *retStr) {
+	if (type == RELATIONAL) 
+		strcpy(retStr, "RELATIONAL") ; 
+	else if (type == ARITHMETIC) 
+		strcpy(retStr , "ARITHMETIC") ; 
+	else if (type == KEYWORD)
+		strcpy(retStr , "KEYWORD") ; 
+	else if (type == IDENTIFIER) 
+		strcpy(retStr , "IDENTIFIER") ; 
+	else if (type == SPECIAL) 
+		strcpy(retStr , "SPECIAL") ;
+	else if (type == NUMERICAL) 
+		strcpy(retStr, "NUMERICAL")  ; 
+	else if (type == LOGICAL) 
+		strcpy(retStr , "LOGICAL") ; 
+	else if (type == LITERAL) 
+		strcpy(retStr, "LITERAL") ; 
+	else if (type == UNARY)  
+		strcpy(retStr,"UNARY") ; 
+	else if (type == SHORTHAND) 
+		strcpy(retStr,"SHORTHAND") ; 
+		
+}
+
+int prompt() {
+	printf(" \n\n Choose - 1. getNextToken 2. Exit ") ; 
+	int a; 
+	scanf("%d",&a) ; 
+	return a ;
+}
+void getNextToken() {
+	char typeStr[15] ; 
+	while( tk == yylex() ) {
+		retString(tk->type , typeStr) ; 
+		printf("< %s,%d,%d,%s >\n",tk->lexeme,tk->rowno, tk->colno , typeStr) ;
+		fprintf(yyout,"< %s,%d,%d,%s >\n",tk->lexeme,tk->rowno, tk->colno , typeStr) ; 
+		return ; 
+	}
+	exit(0) ; 
+
+}
+
 int main(int argc,char **argv) {
-	if (argc < 2) {
-		printf(" To run : ./run input.c ");
+	if (argc < 3) {
+		printf(" To run : ./run input.c output.c ");
 		exit(0) ; 
 	}
 	yyin=fopen(argv[1],"r");
-	while(tk == yylex())
-		printf("\n Row : %d , Col : %d, Type :  %d, Lex :  %s \n",tk->rowno,tk->colno,tk->type ,tk->lexeme );
+	yyout = fopen(argv[2],"w") ; 
+	int flag = 1 ; 
+	while(flag) {
+		switch( prompt() ) {
+			case 1 : getNextToken() ; break ; 
+			case 2 : flag = 0 ; break ; 
+		}
+	}
 	return 0 ; 
 }
 int yywrap() {
