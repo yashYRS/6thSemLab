@@ -1,0 +1,1 @@
+vecAdd.d: ../vecAdd.c
