@@ -1,0 +1,1 @@
+findwords.d: ../findwords.c

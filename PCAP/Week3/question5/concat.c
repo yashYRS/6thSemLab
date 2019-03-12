@@ -29,7 +29,7 @@ int main(int argc , char *argv[]) {
 	MPI_Gather(&newTemp, strlen(newTemp), MPI_CHAR, final, strlen(newTemp), MPI_CHAR, 0 , MPI_COMM_WORLD) ;
 	if (rank == 0 ) {
 		final[2*len] = '\0' ;
-		fprintf(stdout, "%s", final) ;
+		fprintf(stdout, "%s", final);
 		fflush(stdout) ;
 	}
 	fflush(stdout);

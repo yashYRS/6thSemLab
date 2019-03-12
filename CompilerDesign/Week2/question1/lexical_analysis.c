@@ -27,7 +27,7 @@ void rowCol(char c) {
 }
 
 void printToken(int r , int c , char *lex, char *type) {
-	printf("\nAt row - %d , col - %d : lexeme ->  %s , type -> %s",r,c, lex , type );
+	printf("\n<%s ,%d ,%d ,%s >",lex,r,c, type );
 }
 
 
@@ -51,7 +51,7 @@ int getNextToken(FILE *input) {
 					if (curr2 == '*') {
 						curr2 = getc(input) ; 
 						rowCol(curr2) ; 
-						if ( curr2 == '/')
+						if ( curr == '/')
 							break ; // exit this loop 
 					}
 				}
@@ -73,25 +73,20 @@ int getNextToken(FILE *input) {
 
 		if ( curr == '#') {												// Preprocessor 
 			ind = 0 ; 
-			curr2 = getc(input) ; 
-			rowCol(curr2) ; 
+			curr = getc(input) ; 
+			rowCol(curr) ; 
 			initcol = col ; 
 			initrow = row ; 
-			while( isalpha(curr2)) {
-				temp[ind++] = curr2 ; 						
-				curr2 = getc(input) ;
-				rowCol(curr2) ; 
+			while( isalpha(curr)) {
+				temp[ind++] = curr ; 						
+				curr = getc(input) ;
+				rowCol(curr) ; 
 			}
 			temp[ind] = '\0' ;  
-			if ( strcmp(temp,"include") == 0  || strcmp(temp, "define") == 0 ) {
-				printToken(initrow, initcol ,temp , "Preprocessor") ; 
-				newtoken->trow = row ; 
-				newtoken->tcol = col ; 
-				strcpy(newtoken->lex,temp) ; 
-				strcpy(newtoken->type, "Preprocessor") ; 				
-				while(curr2!= '\n') {
-					curr2 = getc(input) ; 			
-					rowCol(curr2) ; 
+			if ( strcmp(temp,"include") == 0  || strcmp(temp, "define") == 0 ) {				
+				while(curr!= '\n') {
+					curr = getc(input) ; 			
+					rowCol(curr) ; 
 				}
 				curr = getc(input) ; 
 				rowCol(curr) ; 
@@ -99,8 +94,8 @@ int getNextToken(FILE *input) {
 			}
 		}
 		if (curr == '+' || curr == '*' || curr == '-') {		// Arithmetic
-			curr2 = getc(input) ; 
-			if (curr2 != curr) {
+			curr = getc(input) ; 
+			if (curr != curr) {
 				strcpy(temp, "") ; 
 				temp[0] = curr ; 
 				temp[1] = '\0' ; 
@@ -110,7 +105,7 @@ int getNextToken(FILE *input) {
 				strcpy(newtoken->lex,temp) ; 
 				strcpy(newtoken->type, "Arithmetic") ; 				
 			}
-			curr = curr2 ; 
+			curr = curr ; 
 			rowCol(curr) ; 
 			return 1 ; 
 		}
@@ -125,20 +120,21 @@ int getNextToken(FILE *input) {
 			strcpy(newtoken->lex,temp) ; 
 			strcpy(newtoken->type, "String") ; 			
 			do {	
-				curr2 = getc(input) ; 
-				rowCol(curr2) ; 
-			}while(curr2 != '"') ; 		
+				curr = getc(input) ; 
+				rowCol(curr) ; 
+			}while(curr != '"') ; 		
+			return 1 ; 
 		}	
 
 		if (curr == '>' || curr == '<' || curr == '!' || curr == '=' ) { 		// Relational 
-			curr2 = getc(input) ; 
+			curr = getc(input) ; 
 			temp[0] = curr ;
-			temp[1] = curr2 ; 
+			temp[1] = curr ; 
 			temp[2] = '\0' ; 
 			newtoken->trow = row ; 
 			newtoken->tcol = col ; 
 			strcpy(newtoken->lex,temp) ; 
- 			if (curr2 == '=') {
+ 			if (curr == '=') {
 				printToken(row,col, temp , "Relational") ; 
 				strcpy(newtoken->type, "Relational") ; 			
 			}
@@ -150,23 +146,23 @@ int getNextToken(FILE *input) {
 				printToken(row,col, temp , "Relational") ; 
 				strcpy(newtoken->type, "Relational") ; 			
 			}
-			rowCol(curr2) ; 
-			curr = curr2 ; 
+			rowCol(curr) ; 
+			curr = curr ; 
 			return 1; 
 		}
 
 		if (curr == '&' || curr == '|' || curr == '^'){ 	// Logical Operators 
-			curr2 = getc(input) ; 
+			curr = getc(input) ; 
 			temp[0] = curr ;
-			temp[1] = curr2 ; 
-			if (curr2 != curr)  {
+			temp[1] = curr ; 
+			if (curr != curr)  {
 				temp[1] = '\0' ; 				
 				printToken(row, col , temp, "Logical") ; 
 				newtoken->trow = row ; 
 				newtoken->tcol = col ; 
 				strcpy(newtoken->lex,temp) ; 
 				strcpy(newtoken->type, "Logical") ; 					
-				curr = curr2 ; 
+				curr = curr ; 
 				rowCol(curr) ; 
 				return 1 ; 
 			}
@@ -184,19 +180,19 @@ int getNextToken(FILE *input) {
 		if ( isdigit(curr) ) {						// Numerical Constants 
 			strcpy(temp,"") ; 
 			ind = 0 ;
-			curr2 = curr ;  
+			curr = curr ;  
 			do {
-				temp[ind++] = curr2 ;  
-				curr2 = getc(input) ; 
+				temp[ind++] = curr ;  
+				curr = getc(input) ; 
 				rowCol(curr) ;  
-			}while(isdigit(curr2)) ; 
+			}while(isdigit(curr)) ; 
 			temp[ind] = '\0' ; 
  			printToken(row, col-ind ,temp, "Numerical") ; 
 			newtoken->trow = row ; 
 			newtoken->tcol = col ; 
 			strcpy(newtoken->lex,temp) ; 
 			strcpy(newtoken->type, "Numerical") ; 	 			
-			curr = curr2 ; 
+			curr = curr ; 
 			return 1;  
 		}
 
@@ -208,17 +204,18 @@ int getNextToken(FILE *input) {
 			newtoken->trow = row ; 
 			newtoken->tcol = col ; 
 			strcpy(newtoken->lex,temp) ; 
-			strcpy(newtoken->type, "Special") ; 				
+			strcpy(newtoken->type, "Special") ; 	
+			return 1 ; 			
 		} 	// Special 
 
-		curr2 = curr ; 
+		curr = curr ; 
 		ind = 0 ;  flag = 0 ; 
 		initrow = row ; initcol = col ; 	
-		if (isalpha(curr2) || curr2 == '_') {									// Keywords and identifiers
-			while( isalpha(curr2) || isdigit(curr2) || curr2 == '_') {
-				temp[ind++] = curr2 ; 
-				curr2 = getc(input) ; 
-				rowCol(curr2) ; 
+		if (isalpha(curr) || curr == '_') {									// Keywords and identifiers
+			while( isalpha(curr) || isdigit(curr) || curr == '_') {
+				temp[ind++] = curr ; 
+				curr = getc(input) ; 
+				rowCol(curr) ; 
 			}
 			temp[ind] = '\0' ; 
 			for (int i = 0 ; i < 12 ; i++) {
@@ -238,28 +235,40 @@ int getNextToken(FILE *input) {
 				strcpy(newtoken->lex,temp) ; 
 				strcpy(newtoken->type, "String") ; 	
 			}
+			return 1 ; 
 		}
 		else {
 			 curr = getc(input) ; 
 			 rowCol(curr) ; 
 			 continue  ; 
 		}
-		curr = curr2 ; 
+		//curr = curr ; 
 	}	
 	return 0 ; 
 }
+int prompt() {
+	printf("\n 1. Get Token 2. Exit \n Enter your choice -> " );
+	int a ; scanf("%d",&a) ; return a; 
+}
 int main() {
 
-	FILE *input = fopen("input.c","r") ; 
+	FILE *input = fopen("test.c","r") ; 
 	if (!input) {
 		printf("Can't open file ") ; 
 		exit(0) ; 
 	}
-	curr = getc(input) ; 
- 	rowCol(curr) ; 
+ 
  	while(1){
- 		if (getNextToken(input) == 0) 
- 			break; 
+ 		switch(prompt()) {	
+ 			case 1 :
+ 					curr = getc(input) ; 
+ 					rowCol(curr) ; 
+ 					if (getNextToken(input) == 0)
+ 						exit(0); 
+ 					break; 
+			case 2 : exit(0); 
+		}
+
  	} 
 	fclose(input) ; 
 	return 0 ; 

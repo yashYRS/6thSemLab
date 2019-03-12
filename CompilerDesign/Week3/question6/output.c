@@ -1,0 +1,11 @@
+< int,2,1,KEYWORD >
+ < main,2,4,IDENTIFIER >
+< (,2,8,SPECIAL >
+< ),2,9,SPECIAL >
+ < {,3,1,SPECIAL >
+< int,7,2,KEYWORD >
+ < a,7,5,IDENTIFIER >
+< ,,7,6,SPECIAL >
+< b,7,7,IDENTIFIER >
+ < ;,7,8,SPECIAL >
+ < a,8,2,IDENTIFIER >
