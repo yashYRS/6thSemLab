@@ -15,7 +15,8 @@ int main(void) {
 	int *C = (int*)malloc(sizeof(int)*N) ;
 	//Initialize the input vectors
 	for (int i = 0 ; i < N ; i++) {
-		A[i] = N - i + 10;
+		printf(" Enter binary value ") ;
+		scanf("%d",&A[i]) ;
 	}
 
 	// Load the kernel source code into the source_str
@@ -23,7 +24,7 @@ int main(void) {
 	FILE *fp ;
 	char *source_str ;
 	size_t source_size ;
-	fp = fopen("convertkernel.cl","r") ;
+	fp = fopen("oneskernel.cl","r") ;
 	if(!fp) {
 		fprintf(stderr, " Failed to load the kernel \n " ) ;
 		getchar() ;
@@ -52,7 +53,7 @@ int main(void) {
 	cl_program program = clCreateProgramWithSource(context, 1, (const char**)&source_str, (const size_t*)&source_size, &ret) ;
 	ret = clBuildProgram(program, 1, &device_id, NULL, NULL , NULL ) ;
 
-	cl_kernel kernel = clCreateKernel(program , "convert", &ret) ;
+	cl_kernel kernel = clCreateKernel(program , "store_ones", &ret) ;
 	ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void*)&a_mem_obj) ;
 	ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void*)&c_mem_obj) ;
 

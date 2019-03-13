@@ -9,21 +9,18 @@ int main(void) {
 	int i;
 	clock_t start , end ;
 	start = clock() ;
-	int N ;
-	printf(" Enter N : ") ; scanf("%d",&N);
-	int *A = (int*)malloc(sizeof(int)*N) ;
-	int *C = (int*)malloc(sizeof(int)*N) ;
-	//Initialize the input vectors
-	for (int i = 0 ; i < N ; i++) {
-		A[i] = N - i + 10;
-	}
+	int N=1000 ;
+	char *A = (char*)malloc(sizeof(char)*N) ;
+	char *C = (char*)malloc(sizeof(char)*N) ;
+	printf("Enter a string: \n");
+	fgets(A,N,stdin) ;
 
 	// Load the kernel source code into the source_str
 
 	FILE *fp ;
 	char *source_str ;
 	size_t source_size ;
-	fp = fopen("convertkernel.cl","r") ;
+	fp = fopen("revAscii.cl","r") ;
 	if(!fp) {
 		fprintf(stderr, " Failed to load the kernel \n " ) ;
 		getchar() ;
@@ -44,15 +41,15 @@ int main(void) {
 	cl_context context = clCreateContext(NULL,1, &device_id, NULL, NULL, &ret) ;
 	cl_command_queue cmd_q = clCreateCommandQueue(context, device_id, CL_QUEUE_PROFILING_ENABLE, &ret) ;
 
-	cl_mem a_mem_obj = clCreateBuffer(context, CL_MEM_READ_ONLY, N*sizeof(int), NULL, &ret ) ;
-	cl_mem c_mem_obj = clCreateBuffer(context, CL_MEM_WRITE_ONLY, N*sizeof(int), NULL, &ret ) ;
+	cl_mem a_mem_obj = clCreateBuffer(context, CL_MEM_READ_ONLY, N*sizeof(char), NULL, &ret ) ;
+	cl_mem c_mem_obj = clCreateBuffer(context, CL_MEM_WRITE_ONLY, N*sizeof(char), NULL, &ret ) ;
 
-	ret = clEnqueueWriteBuffer(cmd_q, a_mem_obj, CL_TRUE,0, N*sizeof(int), A,0,NULL, NULL) ;
+	ret = clEnqueueWriteBuffer(cmd_q, a_mem_obj, CL_TRUE,0, N*sizeof(char), A,0,NULL, NULL) ;
 
 	cl_program program = clCreateProgramWithSource(context, 1, (const char**)&source_str, (const size_t*)&source_size, &ret) ;
 	ret = clBuildProgram(program, 1, &device_id, NULL, NULL , NULL ) ;
 
-	cl_kernel kernel = clCreateKernel(program , "convert", &ret) ;
+	cl_kernel kernel = clCreateKernel(program , "rev_ascii", &ret) ;
 	ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void*)&a_mem_obj) ;
 	ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void*)&c_mem_obj) ;
 
@@ -70,10 +67,10 @@ int main(void) {
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL) ;
 
 	total_time = (double)(time_end - time_start) ;
-	ret = clEnqueueReadBuffer(cmd_q, c_mem_obj, CL_TRUE, 0, N*sizeof(int), C, 0, NULL, NULL) ;
+	ret = clEnqueueReadBuffer(cmd_q, c_mem_obj, CL_TRUE, 0, N*sizeof(char), C, 0, NULL, NULL) ;
 
-	for (i = 0 ; i < N ; i++)
-		printf(" %d -> %d  \n", A[i],C[i]) ;
+
+	printf(" %s  \n",C) ;
 
 	ret = clFlush(cmd_q) ;
 	ret = clReleaseKernel(kernel) ;

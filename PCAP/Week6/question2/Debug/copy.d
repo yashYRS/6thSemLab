@@ -1,0 +1,1 @@
+copy.d: ../copy.c
